@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShikkhaSetu - বাংলাদেশের বিশ্ববিদ্যালয় শিক্ষার্থীদের টিউটর খোঁজার প্ল্যাটফর্ম।">
+  <title>ShikkhaSetu | শিক্ষাসেতু</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="container nav">
+    <a class="logo" href="#home"><span class="logo-icon">S</span> ShikkhaSetu</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <nav id="navMenu">
+      <a href="#home">হোম</a>
+      <a href="#find">টিউটর খুঁজুন</a>
+      <a href="#register">টিউটর হিসেবে যুক্ত হোন</a>
+      <a href="#about">আমাদের সম্পর্কে</a>
+    </nav>
+    <a href="#register" class="nav-cta">টিউটর হোন</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <span class="eyebrow">বাংলাদেশের শিক্ষার্থীদের জন্য</span>
+      <h1>সঠিক টিউটর খুঁজুন,<br><span>শিক্ষার পথ সহজ করুন।</span></h1>
+      <p>বিশ্ববিদ্যালয়ের দক্ষ শিক্ষার্থীদের সঙ্গে শিক্ষার্থী ও অভিভাবকদের সংযোগ ঘটায় ShikkhaSetu।</p>
+      <div class="hero-actions">
+        <a href="#find" class="btn btn-primary">টিউটর খুঁজুন →</a>
+        <a href="#register" class="btn btn-light">টিউটর হিসেবে যুক্ত হোন</a>
+      </div>
+      <div class="hero-note">✓ কোনো অ্যাকাউন্ট প্রয়োজন নেই &nbsp; ✓ সহজে টিউটর খুঁজুন</div>
+    </div>
+    <div class="hero-visual">
+      <div class="visual-card">
+        <div class="visual-icon">🎓</div>
+        <h3>শিক্ষাই হোক সেতুবন্ধন</h3>
+        <p>বিশ্ববিদ্যালয়ের শিক্ষার্থী থেকে নতুন প্রজন্মের শিক্ষার্থী—একটি নির্ভরযোগ্য সংযোগ।</p>
+        <div class="visual-bottom"><span>📚</span><span>💡</span><span>🌱</span></div>
+      </div>
+      <div class="floating-tag">Learn • Teach • Grow</div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="container stats-grid">
+    <div><strong>৮</strong><span>বিভাগ</span></div>
+    <div><strong>৬৪</strong><span>জেলা</span></div>
+    <div><strong>১টি</strong><span>শিক্ষার প্ল্যাটফর্ম</span></div>
+  </div>
+</section>
+
+<section class="section" id="find">
+  <div class="container">
+    <div class="section-heading">
+      <span class="eyebrow">FIND YOUR TUTOR</span>
+      <h2>আপনার পছন্দের টিউটর খুঁজুন</h2>
+      <p>নাম, বিশ্ববিদ্যালয়, বিষয়, বিভাগ বা জেলা দিয়ে টিউটর খুঁজুন।</p>
+    </div>
+
+    <div class="search-panel">
+      <input id="searchText" type="search" placeholder="নাম, বিশ্ববিদ্যালয় বা বিষয়">
+      <select id="searchDivision">
+        <option value="">সব বিভাগ</option>
+        <option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option>
+        <option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option>
+        <option>রংপুর</option><option>ময়মনসিংহ</option>
+      </select>
+      <input id="searchDistrict" placeholder="জেলা">
+      <button class="btn btn-primary" id="searchBtn">খুঁজুন</button>
+    </div>
+
+    <div class="results-top">
+      <h3>অনুমোদিত টিউটর</h3>
+      <span id="resultCount">তথ্য লোড হচ্ছে...</span>
+    </div>
+    <div id="tutorResults" class="tutor-grid">
+      <div class="empty-state">টিউটরদের তথ্য লোড হচ্ছে...</div>
+    </div>
+    <div class="center">
+      <button id="loadMoreBtn" class="btn btn-light hidden">আরও দেখুন</button>
+    </div>
+  </div>
+</section>
+
+<section class="register-section section" id="register">
+  <div class="container register-grid">
+    <div class="register-info">
+      <span class="eyebrow">JOIN AS A TUTOR</span>
+      <h2>আপনি কি বিশ্ববিদ্যালয়ের শিক্ষার্থী?</h2>
+      <p>আপনার দক্ষতা ও অভিজ্ঞতা কাজে লাগিয়ে শিক্ষার্থীদের পড়াতে চান? ShikkhaSetu-তে বিনামূল্যে আপনার টিউটর প্রোফাইল জমা দিন।</p>
+      <ul>
+        <li>✓ বিনামূল্যে প্রোফাইল জমা</li>
+        <li>✓ Admin অনুমোদনের পর প্রোফাইল প্রকাশ</li>
+        <li>✓ কোনো অ্যাকাউন্ট বা Login প্রয়োজন নেই</li>
+      </ul>
+    </div>
+
+    <form id="tutorForm" class="form-card">
+      <h3>টিউটর রেজিস্ট্রেশন ফর্ম</h3>
+      <p class="form-subtitle">সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন।</p>
+
+      <div class="form-row">
+        <label>পূর্ণ নাম *
+          <input name="fullName" required maxlength="80" placeholder="আপনার নাম">
+        </label>
+        <label>মোবাইল নম্বর *
+          <input name="mobile" required inputmode="numeric" pattern="01[3-9][0-9]{8}" placeholder="01XXXXXXXXX">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>ইমেইল
+          <input name="email" type="email" placeholder="example@email.com">
+        </label>
+        <label>বিশ্ববিদ্যালয় *
+          <input name="university" required maxlength="120" placeholder="বিশ্ববিদ্যালয়ের নাম">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>বিভাগ/ডিসিপ্লিন *
+          <input name="department" required placeholder="যেমন: Statistics">
+        </label>
+        <label>শিক্ষাবর্ষ/ব্যাচ
+          <input name="academicYear" placeholder="যেমন: 2024">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>বিভাগ *
+          <select name="division" required>
+            <option value="">নির্বাচন করুন</option>
+            <option>ঢাকা</option><option>চট্টগ্রাম</option><option>রাজশাহী</option>
+            <option>খুলনা</option><option>বরিশাল</option><option>সিলেট</option>
+            <option>রংপুর</option><option>ময়মনসিংহ</option>
+          </select>
+        </label>
+        <label>জেলা *
+          <input name="district" required placeholder="আপনার জেলা">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>যে বিষয় পড়াতে চান *
+          <input name="subjects" required placeholder="যেমন: Math, English, Physics">
+        </label>
+        <label>কোন শ্রেণি পড়াতে চান
+          <input name="classLevels" placeholder="যেমন: Class 6-10, HSC">
+        </label>
+      </div>
+
+      <div class="form-row">
+        <label>অভিজ্ঞতা (বছর)
+          <input name="experience" type="number" min="0" max="50" value="0">
+        </label>
+        <label>প্রত্যাশিত মাসিক বেতন (৳)
+          <input name="minimumSalary" type="number" min="0" placeholder="যেমন: 5000">
+        </label>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="agree" required>
+        আমি নিশ্চিত করছি যে দেওয়া তথ্য সঠিক এবং প্রোফাইল জমা দিতে সম্মতি দিচ্ছি।
+      </label>
+
+      <input name="website" class="honeypot" tabindex="-1" autocomplete="off">
+
+      <button class="btn btn-primary btn-full" id="submitBtn" type="submit">প্রোফাইল জমা দিন</button>
+      <div id="formMessage" class="form-message" role="status"></div>
+      <p class="privacy-note">আপনার প্রোফাইল Admin অনুমোদনের পর প্রকাশিত হবে।</p>
+    </form>
+  </div>
+</section>
+
+<section class="section about-section" id="about">
+  <div class="container about-content">
+    <span class="eyebrow">ABOUT SHIKKHASETU</span>
+    <h2>শিক্ষার্থী ও টিউটরের মাঝে একটি সেতুবন্ধন</h2>
+    <p>ShikkhaSetu একটি শিক্ষামূলক সংযোগ প্ল্যাটফর্ম। অভিভাবকরা অনুমোদিত টিউটরদের তথ্য দেখতে পারবেন এবং আগ্রহী বিশ্ববিদ্যালয় শিক্ষার্থীরা টিউটর হিসেবে প্রোফাইল জমা দিতে পারবেন।</p>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-content">
+    <a class="logo footer-logo" href="#home"><span class="logo-icon">S</span> ShikkhaSetu</a>
+    <p>শিক্ষার সেতুবন্ধনে, সম্ভাবনার নতুন পথে।</p>
+    <small>© <span id="year"></span> ShikkhaSetu. All rights reserved.</small>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

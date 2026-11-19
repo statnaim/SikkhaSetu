@@ -1,0 +1,263 @@
+
+/* ==========================================
+   SHIKKHASETU FRONTEND JAVASCRIPT
+========================================== */
+
+// এখানে নিজের Google Apps Script Web App URL বসাও
+const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+
+const PAGE_SIZE = 9;
+let currentPage = 0;
+let currentTutors = [];
+
+const $ = id => document.getElementById(id);
+
+$("year").textContent = new Date().getFullYear();
+
+/* Mobile menu */
+$("menuBtn").addEventListener("click", () => {
+  $("navMenu").classList.toggle("open");
+});
+
+document.querySelectorAll("#navMenu a").forEach(link => {
+  link.addEventListener("click", () => {
+    $("navMenu").classList.remove("open");
+  });
+});
+
+/* Message */
+function showMessage(message, type = "error") {
+  const box = $("formMessage");
+  box.textContent = message;
+  box.className = "form-message " + type;
+}
+
+/* API URL check */
+function checkApiUrl() {
+  return API_URL.startsWith("https://script.google.com/macros/s/") &&
+         API_URL.endsWith("/exec");
+}
+
+/* API request */
+async function apiRequest(action, data = {}) {
+  if (!checkApiUrl()) {
+    throw new Error("script.js ফাইলে সঠিক Google Apps Script URL বসাও।");
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const body = new URLSearchParams({ action, ...data });
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body,
+      redirect: "follow",
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error("সার্ভার থেকে উত্তর পাওয়া যায়নি।");
+    }
+
+    const result = await response.json();
+
+    if (!result || typeof result.success !== "boolean") {
+      throw new Error("সার্ভারের উত্তর সঠিক নয়।");
+    }
+
+    if (!result.success) {
+      throw new Error(result.message || "অনুরোধ সম্পন্ন হয়নি।");
+    }
+
+    return result;
+
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("সময় শেষ হয়েছে। আবার চেষ্টা করুন।");
+    }
+
+    if (error instanceof TypeError) {
+      throw new Error("সার্ভারে সংযোগ করা যায়নি। API/CORS সেটিং পরীক্ষা করুন।");
+    }
+
+    throw error;
+
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/* Tutor registration */
+$("tutorForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const formData = new FormData(form);
+
+  if (formData.get("website")) return;
+
+  if (!formData.get("agree")) {
+    showMessage("তথ্য জমা দেওয়ার সম্মতি দিন।");
+    return;
+  }
+
+  const submitBtn = $("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "জমা হচ্ছে...";
+  showMessage("");
+
+  const data = {
+    fullName: String(formData.get("fullName") || "").trim(),
+    mobile: String(formData.get("mobile") || "").trim(),
+    email: String(formData.get("email") || "").trim(),
+    university: String(formData.get("university") || "").trim(),
+    department: String(formData.get("department") || "").trim(),
+    academicYear: String(formData.get("academicYear") || "").trim(),
+    division: String(formData.get("division") || "").trim(),
+    district: String(formData.get("district") || "").trim(),
+    subjects: String(formData.get("subjects") || "").trim(),
+    classLevels: String(formData.get("classLevels") || "").trim(),
+    experience: String(formData.get("experience") || "0"),
+    minimumSalary: String(formData.get("minimumSalary") || "0"),
+    website: ""
+  };
+
+  try {
+    const result = await apiRequest("submitTutorProfile", data);
+
+    showMessage(
+      result.message || "প্রোফাইল জমা হয়েছে। Admin অনুমোদনের পর প্রকাশিত হবে।",
+      "success"
+    );
+
+    form.reset();
+
+  } catch (error) {
+    showMessage(error.message);
+
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "প্রোফাইল জমা দিন";
+  }
+});
+
+/* Search tutors */
+async function loadTutors(reset = true) {
+  if (reset) {
+    currentPage = 0;
+    currentTutors = [];
+    $("tutorResults").innerHTML =
+      '<div class="empty-state">টিউটর খোঁজা হচ্ছে...</div>';
+  }
+
+  $("searchBtn").disabled = true;
+
+  try {
+    const result = await apiRequest("getApprovedTutors", {
+      query: $("searchText").value.trim(),
+      division: $("searchDivision").value,
+      district: $("searchDistrict").value.trim(),
+      page: String(currentPage),
+      pageSize: String(PAGE_SIZE)
+    });
+
+    const tutors = Array.isArray(result.tutors) ? result.tutors : [];
+
+    currentTutors = reset
+      ? tutors
+      : currentTutors.concat(tutors);
+
+    renderTutors(currentTutors);
+
+    $("resultCount").textContent =
+      `${currentTutors.length} জন টিউটর দেখানো হচ্ছে`;
+
+    $("loadMoreBtn").classList.toggle("hidden", !result.hasMore);
+
+  } catch (error) {
+    $("tutorResults").innerHTML =
+      `<div class="empty-state">${escapeHTML(error.message)}</div>`;
+
+    $("resultCount").textContent = "তথ্য পাওয়া যায়নি";
+    $("loadMoreBtn").classList.add("hidden");
+
+  } finally {
+    $("searchBtn").disabled = false;
+  }
+}
+
+/* Render tutor cards */
+function renderTutors(tutors) {
+  const container = $("tutorResults");
+
+  if (!tutors.length) {
+    container.innerHTML =
+      '<div class="empty-state">কোনো অনুমোদিত টিউটর পাওয়া যায়নি।</div>';
+    return;
+  }
+
+  container.innerHTML = tutors.map(tutor => {
+    const name = escapeHTML(tutor.fullName || "নাম দেওয়া হয়নি");
+    const university = escapeHTML(tutor.university || "");
+    const department = escapeHTML(tutor.department || "");
+    const subjects = escapeHTML(tutor.subjects || "");
+    const location = escapeHTML(
+      [tutor.district, tutor.division].filter(Boolean).join(", ")
+    );
+
+    const salary = Number(tutor.minimumSalary) > 0
+      ? `৳${escapeHTML(String(tutor.minimumSalary))}/মাস`
+      : "আলোচনা সাপেক্ষে";
+
+    return `
+      <article class="tutor-card">
+        <div class="tutor-avatar">${escapeHTML(name.charAt(0))}</div>
+        <h3>${name}</h3>
+        <p>${university}</p>
+        <p>${department}</p>
+        <div class="tutor-meta">
+          <span>${subjects || "বিষয় উল্লেখ নেই"}</span>
+          <span>${location || "ঠিকানা উল্লেখ নেই"}</span>
+        </div>
+        <p>অভিজ্ঞতা: ${Number(tutor.experience) || 0} বছর</p>
+        <p>প্রত্যাশিত বেতন: ${salary}</p>
+      </article>
+    `;
+  }).join("");
+}
+
+/* HTML safety */
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+/* Search button */
+$("searchBtn").addEventListener("click", () => loadTutors(true));
+
+$("searchText").addEventListener("keydown", event => {
+  if (event.key === "Enter") loadTutors(true);
+});
+
+$("searchDistrict").addEventListener("keydown", event => {
+  if (event.key === "Enter") loadTutors(true);
+});
+
+/* Pagination */
+$("loadMoreBtn").addEventListener("click", () => {
+  currentPage++;
+  loadTutors(false);
+});
+
+/* Initial load */
+loadTutors();
