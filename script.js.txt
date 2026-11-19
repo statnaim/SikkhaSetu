@@ -4,7 +4,7 @@
 ========================================== */
 
 // এখানে নিজের Google Apps Script Web App URL বসাও
-const API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbzkc54IFiiACCwIbIa5Wp7d785qsbd2hZpsBU4_i2T6HOTngHBkBw_JWPK8N8-fbHY2fw/exec";
 
 const PAGE_SIZE = 9;
 let currentPage = 0;
